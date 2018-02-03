@@ -22,4 +22,16 @@ class Player(var name:String, var pos:Int = 0) {
     }
 
     private fun canIMove(rd: Int) = rd >= 4
+
+}
+
+fun String.repeatWith(n: Int) : String  {
+    var that = this
+    (0..n).forEach { that += this }
+    return that
+}
+
+fun main(args: Array<String>) {
+    var s = "-".repeatWith(9)
+    println(s)
 }

@@ -2,6 +2,7 @@ package net.slipp.racingcar
 
 class GamePlay(var count:Int = 0, var players: ArrayList<Player>){
 
+
     fun printResult(){
         var winnerPosition = players.maxBy { it.pos }!!.pos
         var winnerPlayers = players.filter { p -> p.pos ==  winnerPosition}
