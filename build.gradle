@@ -1,6 +1,8 @@
 buildscript {
     ext.kotlin_version = '1.2.21'
-    ext.spring_boot_version = '2.0.0.BUILD-SNAPSHOT'
+    ext.spring_boot_version = '2.0.0.RC1'
+    ext.kotlin_jackson_version = '2.9.4'
+
     repositories {
         mavenCentral()
         jcenter()
@@ -12,7 +14,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "org.jetbrains.kotlin:kotlin-allopen:$kotlin_version"
         classpath "org.springframework.boot:spring-boot-gradle-plugin:$spring_boot_version"
-        classpath 'io.spring.gradle:dependency-management-plugin:1.0.5.BUILD-SNAPSHOT'
+
     }
 }
 
@@ -34,14 +36,19 @@ repositories {
 
 dependencies {
     testCompile("junit:junit:4.12")
-    testCompile("org.springframework.boot:spring-boot-starter-test")
 
-    compile("org.springframework.boot:spring-boot-starter")
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-webflux")
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin:$kotlin_jackson_version")
+
     compile("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
     compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
 
+    compile('org.springframework.boot:spring-boot-starter-webflux')
+    compile('org.springframework.boot:spring-boot-starter-thymeleaf')
+
+    runtime('org.springframework.boot:spring-boot-devtools')
+
+    testCompile('org.springframework.boot:spring-boot-starter-test')
+    testCompile('io.projectreactor:reactor-test')
 }
 
 compileKotlin {
@@ -49,4 +56,9 @@ compileKotlin {
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+jar {
+    baseName = 'spring-boot-kotlin-game'
+    version = '1.0.0'
 }

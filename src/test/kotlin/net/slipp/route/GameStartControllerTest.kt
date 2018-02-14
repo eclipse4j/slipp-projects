@@ -1,5 +1,6 @@
-package net.slipp
+package net.slipp.route
 
+import net.slipp.racingcar.model.RacingPlayer
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -18,14 +19,25 @@ class GameStartControllerTest {
     lateinit var webClient : WebTestClient
 
     @Test
-    fun helloWorld() {
-        webClient.get().uri("/game/on")
+    fun reativeIndex() {
+        webClient.get().uri("/reactive/index")
                 .accept(MediaType.APPLICATION_JSON_UTF8)
                 .exchange()
                 .expectStatus().isOk
                 .expectBody()
                 .consumeWith {
-                    Assertions.assertThat(String(it.responseBody)).isEqualTo("On!")
+                    Assertions.assertThat(String(it.responseBody)).isEqualTo("Hello World")
+                }
+    }
+    @Test
+    fun reativeIndexHtml() {
+        webClient.get().uri("/reactive/role")
+                .accept(MediaType.TEXT_HTML)
+                .exchange()
+                .expectStatus().isOk
+                .expectBody()
+                .consumeWith {
+                    println(String(it.responseBody))
                 }
     }
 }

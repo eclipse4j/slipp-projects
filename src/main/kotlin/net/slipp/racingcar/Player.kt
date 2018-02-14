@@ -31,7 +31,7 @@ fun String.repeatWith(n: Int) : String  {
     return that
 }
 
-fun main(args: Array<String>) {
-    var s = "-".repeatWith(9)
-    println(s)
-}
+//fun main(args: Array<String>) {
+//    var s = "-".repeatWith(9)
+//    println(s)
+//}
