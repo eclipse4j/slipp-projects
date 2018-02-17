@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <title>레이스!</title>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.3.0/mustache.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.11/handlebars.min.js"></script>
+
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
@@ -62,34 +65,66 @@
                 <div class="form-show-div form-group">
                     <h2>이름을 입력하시오.</h2>
                     (이름마다 띄어쓰기로 구분해 주세요.)
-                    <textarea class="form-control" rows="3" name="playersName"
-                              placeholder="박재성 윤지수 김정 정호영"></textarea>
+                    <textarea class="form-control playersName" rows="3" name="playersName"
+                              placeholder="에이군, 비군, 씨군, 디군"></textarea>
                 </div>
                 <div class="submit-button">
-                    <button id="submitBtn" class="btn btn-lg btn-primary btn-block" type="button">게임 만들기</button>
+                    <button id="submitBtn" class="btn btn-lg btn-primary btn-block" type="button">게임 시작</button>
                 </div>
             </form>
         </div>
 
     </div>
+    <div class="row">
+        <div id="racingResult">
+
+        </div>
+    </div>
 </div>
+
+<template id="template" type="x-tmpl-mustache">
+    <h1>My Favorite European Cities</h1>
+    <ul>
+        {{#cities}}
+        <li>{{name}}</li>
+        {{/cities}}
+    </ul>
+</template>
+
+
 <script type="application/javascript">
+    var templateHtmlPrefix = '<table class="table"><thead><tr><th style="width: 20%">Name</th><th>Move</th></tr></thead><tbody>';
+    var templateHtmlSuffix = '</tbody></table>';
+
     $(document).ready(function(){
-        // click on button submit
-        $("#submitBtn").on('click', function(){
-            // send ajax
+        $("#submitBtn").on('click', function(e){
+            e.preventDefault();
+            var playersName = $(".playersName").val();
+            var formJson = {"playersName":playersName};
             $.ajax({
-                url: '/reactive/play', // url where to submit the request
-                type : "POST", // type of action POST || GET
-                dataType : 'json', // data type
-                data : $("#racingForm").serialize(), // post data || get data
+                url: '/reactive/play',
+                type : "POST",
+                contentType: "application/json;charset=utf-8",
+                dataType : 'json',
+                data : JSON.stringify(formJson),
                 success : function(result) {
-                    console.log(result);
+
+                    var templateHtmlCore = "";
+                    $.each(result.players, function(k, v){
+                        templateHtmlCore += "<tr><td>"+v.playerName+"</td><td><div style='background: aquamarine; width: "+(v.pos * 10)+"px'>"+v.pos+"</div></td>"
+                    });
+                    templateHtmlCore = templateHtmlPrefix + templateHtmlCore + templateHtmlSuffix;
+
+                    //var template = $("#template").html();
+                    //Mustache.parse(template);
+                    //var gameResultHtml = Mustache.render(template, data);
+
+                    $("#racingResult").html(templateHtmlCore);
                 },
                 error: function(xhr, resp, text) {
                     console.log(xhr, resp, text);
                 }
-            })
+            });
         });
     });
 </script>

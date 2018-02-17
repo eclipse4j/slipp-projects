@@ -2,12 +2,12 @@ package net.slipp.racingcar
 
 import java.util.concurrent.ThreadLocalRandom
 
-class Player(var name:String, var pos:Int = 0) {
+class Player(var playerName:String, var pos:Int = 0) {
 
     private fun ClosedRange<Int>.random() = ThreadLocalRandom.current().nextInt(endInclusive - start) + start
 
     fun display(){
-        print("$name : ")
+        print("$playerName : ")
         for ( i in 1..pos )
             print("-")
         println()

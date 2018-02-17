@@ -1,12 +1,21 @@
 package net.slipp.racingcar
 
+
 class GamePlay(var count:Int = 0, var players: ArrayList<Player>){
 
+    fun getGameResult():List<Player>{
+        return players
+    }
+
+//    fun getGameResult():List<Player>{
+//        var winnerPosition = players.maxBy { it.pos }!!.pos
+//        var winnerPlayers = players.filter { p -> p.pos ==  winnerPosition}
+//        //var winners = winnerPlayers.joinToString(",") {it.name}
+//        return winnerPlayers
+//    }
 
     fun printResult(){
-        var winnerPosition = players.maxBy { it.pos }!!.pos
-        var winnerPlayers = players.filter { p -> p.pos ==  winnerPosition}
-        var winners = winnerPlayers.joinToString(",") {it.name}
+        var winners = getGameResult();
         println("최종 승리자는 ${winners} 입니다.")
 
     }
