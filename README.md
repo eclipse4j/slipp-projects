@@ -23,10 +23,14 @@ apply plugin: 'org.springframework.boot'
 testCompile("org.springframework.boot:spring-boot-starter-test")
 
 compile("org.springframework.boot:spring-boot-starter")
-compile("org.springframework.boot:spring-boot-starter-web")
 compile("org.springframework.boot:spring-boot-starter-webflux")
 ...
 ```
 
+아래를 포함 시키면 webflux의 라우트는 사용할 수 없다.
+
+```
+compile("org.springframework.boot:spring-boot-starter-web")
+```
 
 
