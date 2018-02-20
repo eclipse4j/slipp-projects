@@ -14,26 +14,23 @@ import java.util.ArrayList
 
 @Component
 class GameHandler  {
+
     fun index() : Mono<String> {
         return Mono.just("Hello World")
     }
 
-//    fun play(req: ServerRequest): Mono<ServerResponse> {
-//        return req.bodyToMono(RacingPlayer::class.java).flatMap { m ->
-//            ServerResponse.status(HttpStatus.ACCEPTED).body(BodyInserters.fromObject(m))
-//        }.flatMap { ServerResponse.ok().render("play", it) }
-//    }
+    fun sepa(playersName: String):ArrayList<Player>{
+        var players = ArrayList<Player>()
+        var playerNames = playersName.split(',')
+        playerNames.forEach { o->players.add(Player(playerName = o, pos = 0)) }
+        return players
+    }
 
     fun play(req: ServerRequest): Mono<ServerResponse> {
-        var players = ArrayList<Player>()
         return req.bodyToMono(RacingPlayer::class.java).flatMap { m ->
-            var playerNames = m.playersName.split(',')
-            playerNames.forEach { o->players.add(Player(playerName = o, pos = 0)) }
-            var gamePlay = GamePlay(5, players)
-            gamePlay.play()
-            var winnners = gamePlay.getGameResult()
-            var racingWinner = RacingResult(winnners)
-            ServerResponse.status(HttpStatus.ACCEPTED).body(BodyInserters.fromObject(racingWinner))
+            var gamePlay = GamePlay(5, sepa(m.playersName))
+            var winnners = gamePlay.getGamePlayAndResult()
+            ServerResponse.status(HttpStatus.ACCEPTED).body(BodyInserters.fromObject(RacingResult(winnners)))
                     .switchIfEmpty(ServerResponse.status(HttpStatus.NOT_FOUND).build())
         }
     }
