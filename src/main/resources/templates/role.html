@@ -25,6 +25,7 @@
             integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
             crossorigin="anonymous"></script>
 
+    <script src="/js/sse.js"></script>
     <style>
         body {
             padding-top: 40px;
@@ -51,6 +52,9 @@
         .submit-button {
             margin-top: 10px;
         }
+        .players {
+            text-align: right;
+        }
     </style>
 
 </head>
@@ -63,8 +67,10 @@
             <form class="form-lotto" name="racingForm" id="racingForm" method="post" action="/reactive/play">
                 <h2 class="text-center">박진감 넘치는 자동차 레이싱 게임 유저</h2>
                 <div class="form-show-div form-group">
+                    <h2>게임횟수</h2>
+                    <input type="text" name="playCount" class="playCount form-control" value="" placeholder="게임횟수를 입력하세요. ex) 5">
                     <h2>이름을 입력하시오.</h2>
-                    (이름마다 띄어쓰기로 구분해 주세요.)
+                    (이름마다 콤마로 구분해 주세요.)
                     <textarea class="form-control playersName" rows="3" name="playersName"
                               placeholder="에이군, 비군, 씨군, 디군"></textarea>
                 </div>
@@ -73,60 +79,78 @@
                 </div>
             </form>
         </div>
-
     </div>
     <div class="row">
         <div id="racingResult">
-
+            <table class="table" width="100%">
+                <thead>
+                    <tr>
+                        <th width="100px">Name</th>
+                        <th>Move</th>
+                    </tr>
+                </thead>
+                <tbody class="game_table">
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
-
-<template id="template" type="x-tmpl-mustache">
-    <h1>My Favorite European Cities</h1>
-    <ul>
-        {{#cities}}
-        <li>{{name}}</li>
-        {{/cities}}
-    </ul>
-</template>
-
-
 <script type="application/javascript">
-    var templateHtmlPrefix = '<table class="table"><thead><tr><th style="width: 20%">Name</th><th>Move</th></tr></thead><tbody>';
-    var templateHtmlSuffix = '</tbody></table>';
-
     $(document).ready(function(){
         $("#submitBtn").on('click', function(e){
             e.preventDefault();
+            $(".game_table").empty();
             var playersName = $(".playersName").val();
-            var formJson = {"playersName":playersName};
-            $.ajax({
-                url: '/reactive/play',
-                type : "POST",
-                contentType: "application/json;charset=utf-8",
-                dataType : 'json',
-                data : JSON.stringify(formJson),
-                success : function(result) {
-
-                    var templateHtmlCore = "";
-                    $.each(result.players, function(k, v){
-                        templateHtmlCore += "<tr><td>"+v.playerName+"</td><td><div style='background: aquamarine; width: "+(v.pos * 10)+"px'>"+v.pos+"</div></td>"
-                    });
-                    templateHtmlCore = templateHtmlPrefix + templateHtmlCore + templateHtmlSuffix;
-
-                    //var template = $("#template").html();
-                    //Mustache.parse(template);
-                    //var gameResultHtml = Mustache.render(template, data);
-
-                    $("#racingResult").html(templateHtmlCore);
-                },
-                error: function(xhr, resp, text) {
-                    console.log(xhr, resp, text);
-                }
-            });
+            var playCount = $(".playCount").val();
+            if(!$.trim(playersName)  ||!$.trim(playCount) ){
+                alert("게임 횟수와 플레이어를 입력하세요.");
+                return;
+            }
+            $('#submitBtn').prop("disabled", true);
+            var $usersHtml = $("<tbody></tbody>");
+            var evtSource = new EventSource("/game/play-stream?playersName="+playersName+"&playCount="+playCount);
+            var playerPosition = {};
+            evtSource.addEventListener('message', function (e) {
+                $usersHtml.empty();
+                var response = event.data;
+                var responseJson = JSON.parse(response);
+                responseJson.forEach(function(k){
+                    var playerWidth = playerPosition[k.playerName];
+                    if ( typeof playerWidth == "undefined" ){
+                        playerWidth = 50;
+                    }
+                    var $userDivTr = $('<tr></tr>');
+                    var $userDiv = $('<div/>').text('[==]').css('width', playerWidth).addClass('players').addClass(k.playerName);
+                    var $userNameDivTd = $('<td></td>').text(k.playerName).appendTo($userDivTr);
+                    var $userPosDivTd = $('<td></td>').append($userDiv);
+                    $userDivTr.append($userNameDivTd);
+                    $userDivTr.append($userPosDivTd);
+                    $usersHtml.append($userDivTr);
+                });
+                $usersHtml.appendTo('.game_table');
+                responseJson.forEach(function(k){
+                    var playerWidth = $('.'+k.playerName).width();
+                    var playerName = k.playerName;
+                    playerWidth = ((k.pos + 1) * 10)+playerWidth;
+                    playerPosition[playerName] = playerWidth;
+                    $('.'+playerName).css("width", playerWidth);
+                });
+                $usersHtml.appendTo('.game_table');
+            }, false);
+            evtSource.onerror = function() {
+                var keys = Object.keys(playerPosition);
+                keys.sort(function(a, b) {
+                    return playerPosition[b] - playerPosition[a]
+                });
+                $('.'+keys[0]).css('background','gold').css("font-weight","Bold");
+                evtSource.close();
+                $('#submitBtn').prop("disabled", false);
+            }
+            evtSource.onopen = function() {
+            }
         });
     });
 </script>
 </body>
 </html>
+
