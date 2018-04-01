@@ -63,7 +63,7 @@
 <div class="container">
     <div class="row">
 
-        <div class="col-md-12">
+        <div class="col-md-9">
             <form class="form-lotto" name="racingForm" id="racingForm" method="post" action="/reactive/play">
                 <h2 class="text-center">박진감 넘치는 자동차 레이싱 게임 유저</h2>
                 <div class="form-show-div form-group">
@@ -71,7 +71,7 @@
                     <input type="text" name="playCount" class="playCount form-control" value="" placeholder="게임횟수를 입력하세요. ex) 5">
                     <h2>이름을 입력하시오.</h2>
                     (이름마다 콤마로 구분해 주세요.)
-                    <textarea class="form-control playersName" rows="3" name="playersName"
+                    <textarea class="form-control playersName" rows="1" name="playersName"
                               placeholder="에이군, 비군, 씨군, 디군"></textarea>
                 </div>
                 <div class="submit-button">
@@ -79,19 +79,20 @@
                 </div>
             </form>
         </div>
+        <div class="col-md-3">
+            <h2>최근순위</h2>
+            <table class="table" width="100%">
+                <thead>
+                <tr>
+                    <th>현재 게임 최고 순위</th>
+                </tr>
+                </thead>
+                <tbody class="game_score_table">
+                </tbody>
+            </table>
+        </div>
     </div>
-    <div class="row">
-        <h2>최근순위</h2>
-        <table class="table" width="100%">
-            <thead>
-            <tr>
-                <th>현재 게임 최고 순위</th>
-            </tr>
-            </thead>
-            <tbody class="game_score_table">
-            </tbody>
-        </table>
-    </div>
+
     <div class="row">
         <div id="racingResult">
             <table class="table" width="100%">
@@ -112,7 +113,7 @@
         var $scoreboard = $(".game_score_table");
         $.get('/game/play-score', function(scoreData) {
             scoreData.forEach(function(o){
-                $scoreboard.append("<tr><td>Name : "+o.name+", 점수 : "+o.score+"</td></tr>");
+                $scoreboard.append("<tr><td>이름 : "+o.name+", 점수 : "+o.score+"</td></tr>");
             })
         });
 

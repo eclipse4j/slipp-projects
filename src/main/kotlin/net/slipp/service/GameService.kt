@@ -4,6 +4,8 @@ import net.slipp.racingcar.GamePlay
 import net.slipp.racingcar.Player
 import net.slipp.racingcar.model.RacingPlayer
 import net.slipp.racingcar.mongodb.repository.PlayerScoreRepository
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 import java.util.ArrayList
 
@@ -21,5 +23,5 @@ class GameService(private val playerScoreRepository: PlayerScoreRepository)  {
     }
 
     fun findAllPlayerScore()  =
-            playerScoreRepository.findAll().sortedWith(compareByDescending ({ it.score }))
+            playerScoreRepository.findAll(PageRequest.of(0, 10, Sort.Direction.DESC, "score")).content
 }
