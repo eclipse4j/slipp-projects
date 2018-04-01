@@ -81,6 +81,18 @@
         </div>
     </div>
     <div class="row">
+        <h2>최근순위</h2>
+        <table class="table" width="100%">
+            <thead>
+            <tr>
+                <th>현재 게임 최고 순위</th>
+            </tr>
+            </thead>
+            <tbody class="game_score_table">
+            </tbody>
+        </table>
+    </div>
+    <div class="row">
         <div id="racingResult">
             <table class="table" width="100%">
                 <thead>
@@ -97,6 +109,13 @@
 </div>
 <script type="application/javascript">
     $(document).ready(function(){
+        var $scoreboard = $(".game_score_table");
+        $.get('/game/play-score', function(scoreData) {
+            scoreData.forEach(function(o){
+                $scoreboard.append("<tr><td>Name : "+o.name+", 점수 : "+o.score+"</td></tr>");
+            })
+        });
+
         $("#submitBtn").on('click', function(e){
             e.preventDefault();
             $(".game_table").empty();
@@ -107,7 +126,7 @@
                 return;
             }
             $('#submitBtn').prop("disabled", true);
-            var $usersHtml = $("<tbody></tbody>");
+            var $usersHtml = $(".game_table");
             var evtSource = new EventSource("/game/play-stream?playersName="+playersName+"&playCount="+playCount);
             var playerPosition = {};
             evtSource.addEventListener('message', function (e) {
@@ -121,7 +140,7 @@
                     }
                     var $userDivTr = $('<tr></tr>');
                     var $userDiv = $('<div/>').text('[==]').css('width', playerWidth).addClass('players').addClass(k.playerName);
-                    var $userNameDivTd = $('<td></td>').text(k.playerName).appendTo($userDivTr);
+                    var $userNameDivTd = $('<td></td>').css('width', '100px').text(k.playerName).appendTo($userDivTr);
                     var $userPosDivTd = $('<td></td>').append($userDiv);
                     $userDivTr.append($userNameDivTd);
                     $userDivTr.append($userPosDivTd);
@@ -144,6 +163,20 @@
                 });
                 $('.'+keys[0]).css('background','gold').css("font-weight","Bold");
                 evtSource.close();
+                $.ajax({
+                    url: '/game/play-score',
+                    type : "POST",
+                    contentType: "application/json;charset=utf-8",
+                    dataType : 'json',
+                    data : JSON.stringify({ name: keys[0], score: playerPosition[keys[0]] }),
+                    success : function(result) {
+                        console.log(result);
+                    },
+                    error: function(xhr, resp, text) {
+                        console.log(xhr, resp, text);
+                    }
+                });
+
                 $('#submitBtn').prop("disabled", false);
             }
             evtSource.onopen = function() {

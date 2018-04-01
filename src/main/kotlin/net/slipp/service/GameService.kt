@@ -3,11 +3,12 @@ package net.slipp.service
 import net.slipp.racingcar.GamePlay
 import net.slipp.racingcar.Player
 import net.slipp.racingcar.model.RacingPlayer
+import net.slipp.racingcar.mongodb.repository.PlayerScoreRepository
 import org.springframework.stereotype.Component
 import java.util.ArrayList
 
 @Component
-class GameService  {
+class GameService(private val playerScoreRepository: PlayerScoreRepository)  {
     fun separatePlayer(playersName: String): ArrayList<Player> {
         var players = playersName.split(',').asSequence().map { o-> Player(playerName = o, pos = 0) }.toList()
         return ArrayList(players)
@@ -18,4 +19,7 @@ class GameService  {
         var winnners = gamePlay.getGamePlayAndResult()
         return winnners
     }
+
+    fun findAllPlayerScore()  =
+            playerScoreRepository.findAll().sortedWith(compareByDescending ({ it.score }))
 }
