@@ -10,22 +10,13 @@ build.gradle
 ```groovy
 
 ext.spring_boot_version = '2.0.0.BUILD-SNAPSHOT'
-...
-repositories {
-    maven {url 'https://repo.spring.io/libs-milestone'}
-    maven {url 'https://repo.spring.io/libs-snapshot'}
-    maven {url 'https://repo.spring.io/plugins-snapshot'}
-}
-...
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'org.springframework.boot'
-...
-testCompile("org.springframework.boot:spring-boot-starter-test")
 
-compile("org.springframework.boot:spring-boot-starter")
-compile("org.springframework.boot:spring-boot-starter-webflux")
-...
 ```
+
+mongoDB를 local 사용할수 있도록 Docker Compose를 사용한다.
+
+$ docker-compose up -d
+
 
 아래를 포함 시키면 webflux의 라우트는 사용할 수 없다.
 
